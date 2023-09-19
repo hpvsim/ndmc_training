@@ -13,6 +13,5 @@ Once you have installed HPVsim, you can run test_install to make sure that every
 Other scripts do not require HPVsim. Check the package imports at the top of each script to see what's required.
 
 ## Structure
-- the folder `hpvsim_india` contains scripts for running HPVsim for Uganda.
 - the folder `exercises` contains scripts for running exercises covered during the training.
 
