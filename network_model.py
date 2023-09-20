@@ -8,28 +8,29 @@ import pylab as pl
 sc.options(dpi=200)
 
 # Set parameters
-beta = 2.5 # Infection rate
-gamma = 1.0 # Recovery rate
+beta = 3 # Infection rate
+gamma = 0.5 # Recovery rate
 n_contacts = 10 # Number of people each person is connected to
-distance = 1.0 # The distance over which people form contacts
-I0 = 10 # Number of people initially infected
+distance = 0.01 # The distance over which people form contacts
+I0 = 1 # Number of people initially infected
 N = 100 # Total population size
 maxtime = 10 # How long to simulate for
 npts = 100 # Number of time points during the simulation
 dt = maxtime/npts # Timestep length
+colors = sc.dictobj(S='darkgreen', I='gold', R='skyblue')
 
 # Create the arrays -- one entry per timestep
-x = np.arange(npts)
+T = np.arange(npts)
 S = np.zeros(npts)
 I = np.zeros(npts)
 R = np.zeros(npts)
-time = x*dt
+time = T*dt
 S[0] = N - I0 # Set initial conditions
 I[0] = I0
 
 
 # Define each person
-class Person:
+class Person(sc.dictobj):
 
     def __init__(self):
         self.S = True # People start off susceptible
@@ -59,7 +60,7 @@ class Person:
 
 
 # Define the simulation
-class Sim:
+class Sim(sc.dictobj):
 
     def __init__(self):
         self.people = [Person() for i in range(N)] # Create all the people
@@ -89,15 +90,6 @@ class Sim:
         contacts = np.unravel_index(inds, ratios.shape)
         self.contacts = np.vstack(contacts).T
 
-    def count_S(self): # Count how many people are susceptible
-        return sum([person.S for person in self.people])
-
-    def count_I(self):
-        return sum([person.I for person in self.people])
-
-    def count_R(self):
-        return sum([person.R for person in self.people])
-
     def check_infections(self): # Check which infectious occur
         for p1,p2 in self.contacts:
             person1 = self.people[p1]
@@ -125,35 +117,40 @@ class Sim:
         self.R.append(this_R)
             
     def run(self):
-        for t in x[:-1]:
+        for t in T[:-1]:
             self.check_infections() # Check which infectious occur
             self.check_recoveries() # Check which recoveries occur
             self.count(t) # Store results
 
     def plot(self):
         pl.figure()
-        pl.plot(time, S, label='Susceptible')
-        pl.plot(time, I, label='Infectious')
-        pl.plot(time, R, label='Recovered')
+        pl.plot(time, S, label='Susceptible', c=colors.S)
+        pl.plot(time, I, label='Infectious', c=colors.I)
+        pl.plot(time, R, label='Recovered', c=colors.R)
         pl.legend()
         pl.xlabel('Time')
         pl.ylabel('Number of people')
         pl.show()
         
-    def animate(self, pause=0.1):
+    def animate(self, pause=0.01):
         pl.figure()
         x,y = self.get_xy()
-        for p in self.contacts:
-            p0 = p[0]
-            p1 = p[1]
-            pl.plot([x[p0], x[p1]], [y[p0], y[p1]], lw=0.5, alpha=0.1, c='k')
-        for t in x[:-1]:
-            inds_S = self.S[t]
-            inds_I = self.I[t]
-            inds_R = self.R[t]
-            
-            pl.scatter(x, y)
-            
+        for t in T[:-1]:
+            pl.gcf().clear()
+            # for p in self.contacts:
+            #     p0 = p[0]
+            #     p1 = p[1]
+            #     pl.plot([x[p0], x[p1]], [y[p0], y[p1]], lw=0.5, alpha=0.1, c='k')
+            counts = sc.dictobj()
+            inds = sc.dictobj()
+            for key in ['S', 'I', 'R']:
+                inds[key] = self[key][t]
+                counts[key] = len(inds[key])
+                this_x = x[inds[key]]
+                this_y = y[inds[key]]
+                pl.scatter(this_x, this_y, c=colors[key])
+            title = f't={t}, S={counts.S}, I={counts.I}, R={counts.R}'
+            pl.title(title)
             pl.pause(pause)
         
         
