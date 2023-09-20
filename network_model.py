@@ -11,11 +11,12 @@ sc.options(dpi=200)
 beta = 3 # Infection rate
 gamma = 0.5 # Recovery rate
 n_contacts = 10 # Number of people each person is connected to
-distance = 0.01 # The distance over which people form contacts
+distance = 10.0 # The distance over which people form contacts
 I0 = 1 # Number of people initially infected
 N = 100 # Total population size
 maxtime = 10 # How long to simulate for
 npts = 100 # Number of time points during the simulation
+seed = 4 # Random seed to use
 dt = maxtime/npts # Timestep length
 colors = sc.dictobj(S='darkgreen', I='gold', R='skyblue')
 
@@ -27,6 +28,7 @@ R = np.zeros(npts)
 time = T*dt
 S[0] = N - I0 # Set initial conditions
 I[0] = I0
+np.random.seed(seed)
 
 
 # Define each person
@@ -130,28 +132,31 @@ class Sim(sc.dictobj):
         pl.legend()
         pl.xlabel('Time')
         pl.ylabel('Number of people')
+        pl.ylim(bottom=0)
+        pl.xlim(left=0)
         pl.show()
         
     def animate(self, pause=0.01):
-        pl.figure()
+        fig = pl.figure()
         x,y = self.get_xy()
         for t in T[:-1]:
-            pl.gcf().clear()
-            # for p in self.contacts:
-            #     p0 = p[0]
-            #     p1 = p[1]
-            #     pl.plot([x[p0], x[p1]], [y[p0], y[p1]], lw=0.5, alpha=0.1, c='k')
-            counts = sc.dictobj()
-            inds = sc.dictobj()
-            for key in ['S', 'I', 'R']:
-                inds[key] = self[key][t]
-                counts[key] = len(inds[key])
-                this_x = x[inds[key]]
-                this_y = y[inds[key]]
-                pl.scatter(this_x, this_y, c=colors[key])
-            title = f't={t}, S={counts.S}, I={counts.I}, R={counts.R}'
-            pl.title(title)
-            pl.pause(pause)
+            if pl.fignum_exists(fig.number):
+                fig.clear()
+                for p in self.contacts:
+                    p0 = p[0]
+                    p1 = p[1]
+                    pl.plot([x[p0], x[p1]], [y[p0], y[p1]], lw=0.5, alpha=0.1, c='k')
+                counts = sc.dictobj()
+                inds = sc.dictobj()
+                for key in ['S', 'I', 'R']:
+                    inds[key] = self[key][t]
+                    counts[key] = len(inds[key])
+                    this_x = x[inds[key]]
+                    this_y = y[inds[key]]
+                    pl.scatter(this_x, this_y, c=colors[key])
+                title = f't={t}, S={counts.S}, I={counts.I}, R={counts.R}'
+                pl.title(title)
+                pl.pause(pause)
         
         
 if __name__ == '__main__':
