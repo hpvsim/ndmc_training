@@ -28,8 +28,7 @@ I[0] = I0
 # Define each person
 class Person:
 
-    def __init__(self, id):
-        self.id = int(id)
+    def __init__(self):
         self.S = True # People start off susceptible
         self.I = False
         self.R = False
@@ -60,7 +59,7 @@ class Person:
 class Population:
 
     def __init__(self):
-        self.people = [Person(i) for i in range(N)] # Create all the people
+        self.people = [Person() for i in range(N)] # Create all the people
         for person in self.people[0:I0]: # Make the first I0 people infectious
             person.infect() # Set the initial conditions
 
@@ -75,10 +74,9 @@ class Population:
 
     def check_infections(self): # Check which infectious occur
         for person1 in self.people:
-            other_ids = [p.id for p in self.people if p!=person1]
-            contact_ids = np.random.choice(other_ids, int(len(self.people)*contact_rate))
-            contacts = [p for p in self.people if p.id in contact_ids]
-            for person2 in contacts:
+            contacts = np.random.randint(0, N, int(N*contact_rate))
+            for contact in contacts:
+                person2 = self.people[contact]
                 person1.check_infect(person2)
 
     def check_recoveries(self): # Check which recoveries occur
@@ -92,7 +90,7 @@ pop = Population()
 # Run the simulation
 for t in x[:-1]:
 
-    pop.check_infections(contact_rate) # CHeck which infectious occur
+    pop.check_infections() # Check which infectious occur
     pop.check_recoveries() # Check which recoveries occur
 
     S[t+1] = pop.count_S() # Count the current number of susceptible people
