@@ -8,6 +8,7 @@ import pylab as pl
 # Set parameters
 beta = 2.5 # Infection rate
 gamma = 1.0 # Recovery rate
+contact_rate = 0.5 # Fraction of population each person is connected to
 I0 = 5 # Number of people initially infected
 N = 100 # Total population size
 maxtime = 10 # How long to simulate for
@@ -72,7 +73,7 @@ class Population:
     def count_R(self):
         return sum([person.R for person in self.people])
 
-    def check_infections(self, contact_rate): # Check which infectious occur
+    def check_infections(self): # Check which infectious occur
         for person1 in self.people:
             other_ids = [p.id for p in self.people if p!=person1]
             contact_ids = np.random.choice(other_ids, int(len(self.people)*contact_rate))
@@ -87,7 +88,6 @@ class Population:
 
 # Create the population
 pop = Population()
-contact_rate = 0.5
 
 # Run the simulation
 for t in x[:-1]:
