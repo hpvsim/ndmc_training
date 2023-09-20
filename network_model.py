@@ -3,7 +3,9 @@ Simple agent-based network model in Python
 '''
 
 import numpy as np
+import sciris as sc
 import pylab as pl
+sc.options(dpi=200)
 
 # Set parameters
 beta = 2.5 # Infection rate
@@ -49,13 +51,11 @@ class Person:
             if other.I: # The other person must be infectious
                 if np.random.rand() < beta/n_contacts*dt: # Infection is probabilistic
                     self.infect()
-        return
 
     def check_recovery(self):
         if self.I: # A person must be infected to recover
             if np.random.rand() < gamma*dt: # Recovery is also probabilistic
                 self.recover()
-        return
 
 
 # Define the simulation
@@ -66,10 +66,17 @@ class Sim:
         for person in self.people[0:I0]: # Make the first I0 people infectious
             person.infect() # Set the initial conditions
         self.make_network()
+        self.S = []
+        self.I = []
+        self.R = []
         
-    def make_network(self):
+    def get_xy(self):
         x = np.array([p.x for p in self.people])
         y = np.array([p.y for p in self.people])
+        return x,y
+        
+    def make_network(self):
+        x,y = self.get_xy()
         dist = np.zeros((N,N))
         for i in range(N):
             dist[i,:] = 1 + ((x - x[i])**2 + (y - y[i])**2)**0.5/distance
@@ -101,16 +108,30 @@ class Sim:
     def check_recoveries(self): # Check which recoveries occur
         for person in self.people:
             person.check_recovery()
+    
+    def count(self, t):
+        this_S = []
+        this_I = []
+        this_R = []
+        for i,person in enumerate(self.people):
+            if person.S: this_S.append(i)
+            if person.I: this_I.append(i)
+            if person.R: this_R.append(i)
+        S[t+1] = len(this_S) # Count the current number of susceptible people
+        I[t+1] = len(this_I)
+        R[t+1] = len(this_R)
+        self.S.append(this_S)
+        self.I.append(this_I)
+        self.R.append(this_R)
             
     def run(self):
         for t in x[:-1]:
             self.check_infections() # Check which infectious occur
             self.check_recoveries() # Check which recoveries occur
-            S[t+1] = self.count_S() # Count the current number of susceptible people
-            I[t+1] = self.count_I()
-            R[t+1] = self.count_R()
-    
+            self.count(t) # Store results
+
     def plot(self):
+        pl.figure()
         pl.plot(time, S, label='Susceptible')
         pl.plot(time, I, label='Infectious')
         pl.plot(time, R, label='Recovered')
@@ -119,6 +140,22 @@ class Sim:
         pl.ylabel('Number of people')
         pl.show()
         
+    def animate(self, pause=0.1):
+        pl.figure()
+        x,y = self.get_xy()
+        for p in self.contacts:
+            p0 = p[0]
+            p1 = p[1]
+            pl.plot([x[p0], x[p1]], [y[p0], y[p1]], lw=0.5, alpha=0.1, c='k')
+        for t in x[:-1]:
+            inds_S = self.S[t]
+            inds_I = self.I[t]
+            inds_R = self.R[t]
+            
+            pl.scatter(x, y)
+            
+            pl.pause(pause)
+        
         
 if __name__ == '__main__':
     
@@ -126,3 +163,4 @@ if __name__ == '__main__':
     sim = Sim()
     sim.run()
     sim.plot()
+    sim.animate()
