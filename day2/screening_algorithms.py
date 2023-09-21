@@ -336,8 +336,8 @@ def make_scens(base_sim, algos):
     scenarios = {}
     scenarios['baseline'] = {'name': 'No screening', 'pars': {}}
 
-    for num,nalgo in algos.items():
-        scenarios[num] = {'name': f'Algorithm {num}', 'pars':nalgo}
+    for num,algo in algos.items():
+        scenarios[num] = {'name': f'Algorithm {num}', 'pars':dict(interventions=algo)}
     scens = hpv.Scenarios(sim=base_sim, metapars={'n_runs': 3}, scenarios=scenarios)
     scens.run(debug=debug)
     to_plot = {
