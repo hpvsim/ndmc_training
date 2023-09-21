@@ -5,6 +5,7 @@ Define an HPVsim simulation for India
 # Standard imports
 import numpy as np
 import sciris as sc
+import pylab as pl
 import hpvsim as hpv
 
 # Imports from this repository
@@ -27,8 +28,8 @@ save_plots = True
 # List of what to run -- uncomment lines to run them
 to_run = [
     # 'run_sim',
-    # 'run_calib',
-    'plot_calib'
+    'run_calib',
+    # 'plot_calib'
 ]
 
 
@@ -83,7 +84,8 @@ def make_sim(calib_pars=None, analyzers=[], debug=0, datafile=None, seed=1):
 
 
 # %% Simulation running functions
-def run_sim(calib_pars=None, analyzers=None, debug=0, datafile=None, seed=1, verbose=.1, do_save=False):
+def run_sim(calib_pars=None, analyzers=None, debug=0, datafile=None, 
+            seed=1, verbose=.1, label='', do_save=False):
     # Make sim
     sim = make_sim(
         debug=debug,
@@ -92,7 +94,7 @@ def run_sim(calib_pars=None, analyzers=None, debug=0, datafile=None, seed=1, ver
         analyzers=analyzers,
         calib_pars=calib_pars
     )
-    sim.label = f'Sim--{seed}'
+    sim.label = f'Sim {seed} {label}'
 
     # Run
     sim['verbose'] = verbose
@@ -151,6 +153,8 @@ def run_calib(n_trials=None, n_workers=None, do_save=True, filestem=''):
     calib.calibrate()
     filename = f'india_calib{filestem}'
     if do_save:
+        if do_shrink:
+            calib.sim.shrink()
         sc.saveobj(f'results/{filename}.obj', calib)
 
     print(f'Best pars are {calib.best_pars}')
@@ -183,9 +187,15 @@ if __name__ == '__main__':
     T = sc.timer()  # Start a timer
 
     if 'run_sim' in to_run:
-        calib_pars = sc.loadobj('results/india_pars.obj')  # Load parameters from a previous calibration
-        sim = run_sim(calib_pars=None)  # Run the simulation
-        sim.plot()  # Plot the simulation
+        sim = run_sim(label='Uncalibrated')  # Run the simulation
+        sim.plot(do_show=False)  # Plot the simulation
+        try:
+            calib_pars = sc.loadobj('results/india_pars.obj')  # Load parameters from a previous calibration
+            sim = run_sim(calib_pars=calib_pars, label='Calibrated')  # Run the simulation
+            sim.plot(do_show=False)  # Plot the simulation
+        except:
+            print('Could not plot calibrated version; please run run_calib, then plot_calib')
+        pl.show()
 
     if 'run_calib' in to_run:
         sim, calib = run_calib(n_trials=n_trials, n_workers=n_workers, filestem='', do_save=True)
