@@ -1,5 +1,12 @@
 '''
 Simple agent-based network model in Python
+
+NOTE: How to view the animation depends on what IDE you're using.
+Specifically:
+- It will work without change from the command line, Spyder, or VS Code.
+- For PyCharm, ensure you disable "SciView" before running.
+- For Jupyter, set save_movie = True and view the saved movie
+  (you might need to run "pip install ffmpeg-python" in a terminal first)
 '''
 
 import numpy as np
