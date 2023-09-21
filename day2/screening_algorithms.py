@@ -315,6 +315,13 @@ def make_algorithms():
     return algos
 
 
+def make_base_sim():
+    """ Make base sim """
+    pars = make_pars()
+    sim = hpv.Sim(pars, label='No screening')
+    return sim
+
+
 def make_sims():
     """ Set up scenarios to compare algorithms """
     pars = make_pars()
@@ -324,6 +331,21 @@ def make_sims():
     for num,algo in algos.items():
         sims += hpv.Sim(pars, interventions=algo, label=f'Algorithm {num}')
     return sims
+
+
+def make_scens(base_sim, algos):
+    scenarios = {}
+    scenarios['baseline'] = {'name': 'No screening', 'pars': {}}
+
+    for num,nalgo in algos.items():
+        scenarios[num] = {'name': f'Algorithm {num}', 'pars':nalgo}
+    scens = hpv.Scenarios(sim=base_sim, metapars={'n_runs': 3}, scenarios=scenarios)
+    scens.run(debug=debug)
+    to_plot = {
+        'Age standardized cancer incidence': ['asr_cancer_incidence'],
+        'Treatments': ['new_cin_treatments'],
+    }
+    scens.plot(to_plot=to_plot)
 
 
 def run_sims():
@@ -337,5 +359,8 @@ def run_sims():
 #%% Run as a script
 if __name__ == '__main__':
 
-    msim = run_sims()
+    # msim = run_sims()
+    base_sim = make_base_sim()
+    algos = make_algorithms()
+    scens = make_scens(base_sim, algos)
 
