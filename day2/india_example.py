@@ -27,8 +27,8 @@ save_plots = True
 
 # List of what to run -- uncomment lines to run them
 to_run = [
-    # 'run_sim',
-    'run_calib',
+    'run_sim',
+    # 'run_calib',
     # 'plot_calib'
 ]
 
