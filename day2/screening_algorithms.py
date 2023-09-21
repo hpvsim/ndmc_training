@@ -335,6 +335,14 @@ def run_sims():
 
 #%% Run as a script
 if __name__ == '__main__':
-
+    
+    # Run
     msim = run_sims()
+    
+    # Plot
+    to_plot = [
+        'asr_cancer_incidence',
+        'new_cin_treatments',
+    ]
+    msim.plot(to_plot, color_by_sim=True, max_sims=len(msim))
 
