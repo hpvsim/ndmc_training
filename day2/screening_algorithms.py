@@ -11,7 +11,7 @@ import hpvsim as hpv
 debug = 1
 
 def make_pars(seed=1, **kwargs):
-    ''' Make a single sim '''
+    """ Make a single sim """
 
     # Parameters
     pars = sc.mergedicts(dict(
@@ -26,7 +26,8 @@ def make_pars(seed=1, **kwargs):
     return pars
 
 
-def make_algorithms(seed=0, debug=debug):
+def make_algorithms():
+    """ Create the different screening and treatment algorithms """
 
     # Shared parameters
     algos = dict()
