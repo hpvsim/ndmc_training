@@ -3,16 +3,18 @@ Construct the 7 screen and treat algorithms recommended by the WHO
 See documentation here: https://www.ncbi.nlm.nih.gov/books/NBK572308/
 '''
 
-import hpvsim as hpv
+import sciris as sc
 import numpy as np
+import hpvsim as hpv
+
 
 debug = 1
 
-def make_sim(seed=0):
-    ''' Make a single sim '''
+def make_pars(seed=1, **kwargs):
+    """ Make a single sim """
 
     # Parameters
-    pars = dict(
+    pars = sc.mergedicts(dict(
         n_agents        = [50e3,5e3][debug],
         dt              = [0.5,1.0][debug],
         start           = [1975,2000][debug],
@@ -20,16 +22,15 @@ def make_sim(seed=0):
         ms_agent_ratio  = 10,
         burnin          = [45,0][debug],
         rand_seed       = seed,
-    )
-    sim = hpv.Sim(pars=pars)
-    return sim
+    ), kwargs)
+    return pars
 
 
-def make_algorithms(sim=None, seed=0, debug=debug):
-
-    if sim is None: sim = make_sim(seed=seed)
+def make_algorithms():
+    """ Create the different screening and treatment algorithms """
 
     # Shared parameters
+    algos = dict()
     primary_screen_prob = 0.2
     triage_screen_prob = 0.9
     ablate_prob = 0.9
@@ -58,8 +59,8 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo1 = [via_primary, ablation1]
-    for intv in algo1: intv.do_plot=False
+    algos['1'] = [via_primary, ablation1]
+
 
     ####################################################################
     #### Algorithm 2 (https://www.ncbi.nlm.nih.gov/books/NBK572308/)
@@ -82,8 +83,8 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo2 = [hpv_primary, ablation2]
-    for intv in algo2: intv.do_plot=False
+    algos['2'] = [hpv_primary, ablation2]
+    
 
     ####################################################################
     #### Algorithm 3 (https://www.ncbi.nlm.nih.gov/books/NBK572308/)
@@ -129,8 +130,7 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo3 = [cytology, hpv_triage, colpo, ablation3]
-    for intv in algo3: intv.do_plot=False
+    algos['3'] = [cytology, hpv_triage, colpo, ablation3]
 
 
     ####################################################################
@@ -177,8 +177,7 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo4 = [hpv_primary4, via_triage, tx_assigner, ablation4]
-    for intv in algo4: intv.do_plot=False
+    algos['4'] = [hpv_primary4, via_triage, tx_assigner, ablation4]
 
 
     ####################################################################
@@ -224,8 +223,7 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo5 = [hpv_primary5, via_triage5, tx_assigner5, ablation5]
-    for intv in algo5: intv.do_plot=False
+    algos['5'] = [hpv_primary5, via_triage5, tx_assigner5, ablation5]
 
 
     ####################################################################
@@ -261,8 +259,8 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo6 = [hpv_primary6, colpo6, ablation6]
-    for intv in algo6: intv.do_plot=False
+    algos['6'] = [hpv_primary6, colpo6, ablation6]
+
 
     ####################################################################
     #### Algorithm 7 (https://www.ncbi.nlm.nih.gov/books/NBK572308/)
@@ -295,7 +293,7 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         annual_prob=False,
         prob=triage_screen_prob,
         eligibility=to_colpo,
-        label='colpo',
+        label='colposcopy',
     )
 
     # After colpo, treat HSILs with ablation
@@ -307,34 +305,37 @@ def make_algorithms(sim=None, seed=0, debug=debug):
         label = 'ablation'
     )
 
-    algo7 = [hpv_primary7, cytology7, colpo7, ablation7]
-    for intv in algo7: intv.do_plot=False
+    algos['7'] = [hpv_primary7, cytology7, colpo7, ablation7]
+
+    # Turn off plotting for all interventions
+    for algo in algos.values():
+        for intv in algo:
+            intv.do_plot = False
+
+    return algos
 
 
-    ####################################################################
-    #### Set up scenarios to compare algoriths
-    ####################################################################
+def make_sims():
+    """ Set up scenarios to compare algorithms """
+    pars = make_pars()
+    algos = make_algorithms()
+    sims = sc.autolist()
+    sims += hpv.Sim(pars, label='No screening')
+    for num,algo in algos.items():
+        sims += hpv.Sim(pars, interventions=algo, label=f'Algorithm {num}')
+    return sims
 
-    # Create, run, and plot the simulations
-    sim0 = hpv.Sim(label='No screening')
-    sim1 = hpv.Sim(interventions=algo1, label='Algorithm 1')
-    sim2 = hpv.Sim(interventions=algo2, label='Algorithm 2')
-    sim3 = hpv.Sim(interventions=algo3, label='Algorithm 3')
-    sim4 = hpv.Sim(interventions=algo4, label='Algorithm 4')
-    sim5 = hpv.Sim(interventions=algo5, label='Algorithm 5')
-    sim6 = hpv.Sim(interventions=algo6, label='Algorithm 6')
-    sim7 = hpv.Sim(interventions=algo7, label='Algorithm 7')
-    msim = hpv.parallel([sim0, sim1, sim2, sim3, sim4, sim5, sim6, sim7])
 
+def run_sims():
+    """ Run the simulations """
+    sims = make_sims()
+    msim = hpv.parallel(sims)
     msim.compare()
-
     return msim
-
-
 
 
 #%% Run as a script
 if __name__ == '__main__':
 
-    msim = make_algorithms()
+    msim = run_sims()
 
