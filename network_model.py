@@ -5,13 +5,12 @@ Simple agent-based network model in Python
 import numpy as np
 import sciris as sc
 import pylab as pl
-sc.options(dpi=200)
 
 # Set parameters
 beta = 3 # Infection rate
 gamma = 0.5 # Recovery rate
 n_contacts = 10 # Number of people each person is connected to
-distance = 0.01 # The distance over which people form contacts
+distance = 100 # The distance over which people form contacts
 I0 = 1 # Number of people initially infected
 N = 100 # Total population size
 maxtime = 10 # How long to simulate for
@@ -19,6 +18,7 @@ npts = 100 # Number of time points during the simulation
 seed = 4 # Random seed to use
 dt = maxtime/npts # Timestep length
 colors = sc.dictobj(S='darkgreen', I='gold', R='skyblue')
+save_movie = False # Whether to save the movie (slow)
 
 # Create the arrays -- one entry per timestep
 T = np.arange(npts)
@@ -136,7 +136,8 @@ class Sim(sc.dictobj):
         pl.xlim(left=0)
         pl.show()
         
-    def animate(self, pause=0.01):
+    def animate(self, pause=0.01, save=False):
+        anim = sc.animation()
         fig,ax = pl.subplots()
         x,y = self.get_xy()
         for p in self.contacts:
@@ -162,6 +163,11 @@ class Sim(sc.dictobj):
                 title = f't={t}, S={counts.S}, I={counts.I}, R={counts.R}'
                 pl.title(title)
                 pl.pause(pause)
+                if save:
+                    anim.addframe()
+        
+        if save:
+            anim.save(f'network_{distance}.mp4')
         
         
 if __name__ == '__main__':
@@ -170,4 +176,4 @@ if __name__ == '__main__':
     sim = Sim()
     sim.run()
     sim.plot()
-    sim.animate()
+    sim.animate(save=save_movie)
