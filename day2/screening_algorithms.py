@@ -1,7 +1,7 @@
-'''
+"""
 Construct the 7 screen and treat algorithms recommended by the WHO
 See documentation here: https://www.ncbi.nlm.nih.gov/books/NBK572308/
-'''
+"""
 
 import sciris as sc
 import numpy as np
@@ -10,19 +10,18 @@ import hpvsim as hpv
 
 debug = 1
 
-def make_pars(seed=1, **kwargs):
-    """ Make a single sim """
-
-    # Parameters
-    pars = sc.mergedicts(dict(
-        n_agents        = [50e3,5e3][debug],
-        dt              = [0.5,1.0][debug],
-        start           = [1975,2000][debug],
-        end             = 2060,
-        ms_agent_ratio  = 10,
-        burnin          = [45,0][debug],
-        rand_seed       = seed,
-    ), kwargs)
+def make_pars(seed=1):
+    """ Set default simulation parameters"""
+    pars = dict(
+        location = 'india',
+        n_agents = [50e3, 5e3][debug],
+        dt       = [0.5, 1.0][debug],
+        start    = [1975, 2000][debug],
+        burnin   = [45, 0][debug],
+        end      = 2060,
+        rand_seed = seed,
+        ms_agent_ratio = 10,
+    )
     return pars
 
 
