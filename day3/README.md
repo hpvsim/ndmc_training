@@ -1,3 +1,3 @@
 # Day 3
 
-This folder will contain the group exercises. Check back soon!
+This folder contains the group exercises: multi-location calibration (`calibration`), and vaccination and screening scenarios (`vaccination`).

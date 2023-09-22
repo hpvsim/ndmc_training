@@ -8,10 +8,14 @@ to run.
 
 #%% General settings
 
+# Turn off multithreading (improves performance in some cases)
+import os
+os.environ['SCIRIS_NUM_THREADS'] = '1'
+import sciris as sc
+
 # Standard imports
 import numpy as np
 import pandas as pd
-import sciris as sc
 import hpvsim as hpv
 
 # Imports from this repository
@@ -181,10 +185,11 @@ def run_scens(location=None, screen_intvs=None, vx_intvs=None, # Input data
                 meta.count = count
                 meta.n_sims = n_sims
                 meta.inds = [i_sc, i_vx, i_s]
-                meta.vals = sc.objdict(sc.mergedicts(screen_scen_pars, vx_scen_pars,
-                                                     dict(seed=i_s, screen_scen=sc_label, vx_scen=vx_label)))
-                ikw.append(
-                    sc.objdict(screen_intv=screen_scen_pars, vx_intv=vx_scen_pars, seed=i_s))
+                itervals = dict(seed=i_s, screen_scen=sc_label, vx_scen=vx_label)
+                mergedvals = sc.mergedicts(screen_scen_pars, vx_scen_pars, itervals)
+                meta.vals = sc.objdict(mergedvals)
+                kw = sc.objdict(screen_intv=screen_scen_pars, vx_intv=vx_scen_pars, seed=i_s)
+                ikw.append(kw)
                 ikw[-1].meta = meta
 
     # Actually run

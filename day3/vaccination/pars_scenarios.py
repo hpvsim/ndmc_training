@@ -337,7 +337,7 @@ def get_tnv_intvs(dose1=None, dose2=None, campaign_coverage=None, routine_covera
 def get_txvx_intvs(use_case=None, indication=None, low_eff=None, high_eff=None, txvx_prods=None, intro_year=2030,
                    paired_px=False, genotypes=None, campaign_age=(25,50), routine_age=(25,26), campaign_coverage=0.7,
                    routine_coverage=0.7, dose2_uptake=0.8):
-    ''' Get txvx interventions'''
+    ''' Get txvx interventions '''
 
     if indication is not None:
         txvx_prods = make_txvx_indication(indication)
