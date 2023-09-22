@@ -40,9 +40,8 @@ def make_sim_parts(location=None, debug=0,
         end = 2060
 
     # Parameters
-    # Parameters
     pars = dict(
-        n_agents       = [50e3,1e3][debug],
+        n_agents       = [20e3,1e3][debug],
         dt             = [0.25,1.0][debug],
         start          = [1950,1980][debug],
         end            = end,
