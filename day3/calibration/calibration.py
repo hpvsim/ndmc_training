@@ -525,9 +525,13 @@ class MultiCal(sc.prettyobj):
             print('Could not delete study, skipping...')
             print(str(E))
         if os.path.exists(self.run_args.db_name):
-            os.remove(self.run_args.db_name)
-            if self.verbose:
-                print(f'Removed existing calibration {self.run_args.db_name}')
+            try:
+                sc.rmpath(self.run_args.db_name, die=False)
+                if self.verbose:
+                    print(f'Removed existing calibration {self.run_args.db_name}')
+            except Exception as E:
+                print('Could not delete study file, skipping...')
+                print(str(E))
         return
 
     def make_study(self):
