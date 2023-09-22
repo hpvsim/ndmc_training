@@ -1,5 +1,5 @@
 """
-Plot implied natural history.
+Plot the results of a calibration
 """
 import pylab as pl
 import pandas as pd
