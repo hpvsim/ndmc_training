@@ -25,6 +25,7 @@ import utils as ut
 # Comment out to not run
 to_run = [
     'run_scenarios',
+    'plot_scenarios'
 ]
 
 # Comment out locations to not run
@@ -32,7 +33,7 @@ locations = [
     'india'
 ]
 
-debug = True
+debug = False
 n_seeds = [3, 1][debug] # How many seeds to use for stochasticity in projections
 
 label_dict = {
@@ -266,14 +267,14 @@ if __name__ == '__main__':
             # Construct the scenarios
             screen_scens = sc.objdict({
                 'No screening': {},
-                '70% S&T cov': dict(
-                    primary='hpv',
-                    screen_coverage=0.7,
-                ),
-                '70% VIA S&T cov': dict(
-                    primary='via',
-                    screen_coverage=0.7,
-                ),
+                # '70% S&T cov': dict(
+                #     primary='hpv',
+                #     screen_coverage=0.7,
+                # ),
+                # '70% VIA S&T cov': dict(
+                #     primary='via',
+                #     screen_coverage=0.7,
+                # ),
             })
 
             vx_scens = sc.objdict({
@@ -296,3 +297,14 @@ if __name__ == '__main__':
 
             alldf, msims = run_scens(screen_intvs=screen_scens, vx_intvs=vx_scens, calib_filestem='',
                                      n_seeds=n_seeds, location=location, debug=debug)
+
+    if 'plot_scenarios' in to_run:
+
+        ut.plot_residual_burden_vx(
+            label_dict=label_dict,
+            location='india',
+            vx_scens=['Vx, 90% cov, 9-14', 'Vx, 90% cov, 9-14, gender neutral',
+                      'Vx, 90% cov, 9-24'
+                      ],
+            screen_scens=['No screening'],
+        )
