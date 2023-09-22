@@ -284,37 +284,11 @@ if __name__ == '__main__':
                     age_range=(9, 14),
                     gender_neutral=True
                 ),
-                'Vx, 90% cov, 9-14, gender neutral, 45% eff': dict(
-                    vx_coverage=0.9,
-                    age_range=(9, 14),
-                    gender_neutral=True,
-                    male_eff_redux=True
-                ),
-                'Vx, 90% cov, 9-18': dict(
-                    vx_coverage=0.9,
-                    age_range=(9, 18)
-                ),
                 'Vx, 90% cov, 9-24': dict(
                     vx_coverage=0.9,
-                    age_range=(9, 24)
-                ),
-                'Vx, 90% cov, 9-14, 9V': dict(
-                    vx_coverage=0.9,
-                    product='nonavalent',
-                    age_range=(9, 14)
-                ),
-                'Vx, 90% cov, 9-18, 9V': dict(
-                    vx_coverage=0.9,
-                    product='nonavalent',
-                    age_range=(9, 18)
-                ),
-                'Vx, 90% cov, 9-24, 9V': dict(
-                    vx_coverage=0.9,
-                    product='nonavalent',
                     age_range=(9, 24)
                 ),
             })
 
             alldf, msims = run_scens(screen_intvs=screen_scens, vx_intvs=vx_scens, calib_filestem='',
                                      n_seeds=n_seeds, location=location, debug=debug)
-
