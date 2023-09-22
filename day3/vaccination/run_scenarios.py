@@ -167,7 +167,7 @@ def make_msims(sims, use_mean=True, save_msims=False):
     return msim
 
 def run_scens(location=None, screen_intvs=None, vx_intvs=None, # Input data
-              calib_filestem='', debug=0, n_seeds=2, verbose=-1# Sim settings
+              calib_filestem='', debug=0, n_seeds=2, verbose=0.1# Sim settings
               ):
     '''
     Run all screening/triage product scenarios for a given location
