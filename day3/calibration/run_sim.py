@@ -1,19 +1,14 @@
 """
 Define the HPVsim simulation objects.
 """
-# Additions to handle numpy multithreading
-import os
 
-os.environ.update(
-    OMP_NUM_THREADS='1',
-    OPENBLAS_NUM_THREADS='1',
-    NUMEXPR_NUM_THREADS='1',
-    MKL_NUM_THREADS='1',
-)
+# Turn off multithreading (improves performance in some cases)
+import os
+os.environ['SCIRIS_NUM_THREADS'] = '1'
+import sciris as sc
 
 # Standard imports
 import numpy as np
-import sciris as sc
 import hpvsim as hpv
 
 # Imports from this repository
@@ -22,7 +17,6 @@ import locations as loc
 
 
 # %% Settings and filepaths
-# Debug switch
 debug = 0  # Run with smaller population sizes and in serial
 do_shrink = True  # Do not keep people when running sims (saves memory)
 

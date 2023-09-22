@@ -3,16 +3,9 @@ Run a pooled calibration of HPVsim to multiple states to produce estimates
 of burden of cervical cancer over 2020-2060.
 '''
 
-# Additions to handle numpy multithreading
+# Turn off multithreading (improves performance in some cases)
 import os
-os.environ.update(
-    OMP_NUM_THREADS = '1',
-    OPENBLAS_NUM_THREADS = '1',
-    NUMEXPR_NUM_THREADS = '1',
-    MKL_NUM_THREADS = '1',
-)
-
-# Standard imports
+os.environ['SCIRIS_NUM_THREADS'] = '1'
 import sciris as sc
 
 # Imports from this repository
@@ -34,7 +27,6 @@ locations = loc.locations
 # Run settings for calibration (dependent on debug)
 n_trials    = [1000, 2][debug]  # How many trials to run for calibration
 n_workers   = [40, 1][debug]    # How many cores to use
-storage     = ["mysql://hpvsim_user@localhost/hpvsim_db", None][debug] # Storage for calibrations
 
 ########################################################################
 # Run calibration
@@ -123,7 +115,6 @@ def run_calib(locations=None, n_trials=None, n_workers=None,
         db_name='multical0105.db',
         total_trials=n_trials,
         n_workers=n_workers,
-        storage=storage,
         keep_db=False,
     )
     calib.calibrate()
