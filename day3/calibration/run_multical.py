@@ -60,11 +60,12 @@ def make_unique_priors(locations=None):
 def make_datafiles(locations):
     ''' Get the relevant datafiles for the selected locations '''
     datafiles = dict()
+    datadir = sc.thispath(__file__) / 'data'
     for location in locations:
         dflocation = location.replace(' ', '_')
         datafiles[location] = [
-            f'data/{dflocation}_cancer_cases.csv',
-            f'data/{dflocation}_asr_cancer_incidence.csv',
+            datadir / f'{dflocation}_cancer_cases.csv',
+            datadir / f'{dflocation}_asr_cancer_incidence.csv',
         ]
     return datafiles
 
