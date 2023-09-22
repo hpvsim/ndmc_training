@@ -1,3 +1,3 @@
-# hpvsim_may2023GR
+# hpvsim_ndmc
 
-Repository set up for May 2023 GR analyses, based upon `flex-sev-v6` branch of `hpvsim`.
+Repository set up for NDMC HPVsim analysis.
