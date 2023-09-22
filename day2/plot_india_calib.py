@@ -1,27 +1,22 @@
 """
 Plot implied natural history.
 """
-import hpvsim as hpv
-import hpvsim.utils as hpu
-import hpvsim.parameters as hppar
 import pylab as pl
 import pandas as pd
-from scipy.stats import lognorm, norm
 import numpy as np
 import sciris as sc
-import utils as ut
 import seaborn as sns
 
-import run_sim as rs
 
 
 # %% Functions
 def annotate_axes(ax, text, fontsize=18):
     ax.text(0.5, 0.5, text, transform=ax.transAxes,
             ha="center", va="center", fontsize=fontsize, color="darkgrey")
+
+
 def plot_calib(calib, res_to_plot=100):
 
-    ut.set_font(size=16)
     fig = pl.figure(layout="tight", figsize=(10, 7))
     prev_col = '#5f5cd2'
     canc_col = '#c1981d'
@@ -137,7 +132,7 @@ def plot_calib(calib, res_to_plot=100):
         ax.set_xlabel('')
         ax.set_title(rlabels[ai])
 
-    pl.savefig(f"figures/figS1.png", dpi=300)
+    pl.savefig(f"calib_plot.png", dpi=300)
     pl.show()
 
     return
