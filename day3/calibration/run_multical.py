@@ -15,8 +15,8 @@ import locations as loc
 
 # Comment out to not run
 to_run = [
-    # 'run_calibration',
-    'plot_calibration',
+    'run_calibration',
+    # 'plot_calibration',
 ]
 
 # Other settings
@@ -152,7 +152,7 @@ def load_calib(filestem=None, locations=None, do_plot=True, max_to_plot=50, whic
             fig = calib.plot(slabel=location, res_to_plot=res_to_plot, plot_type='sns.boxplot')
             fig.suptitle(f'Calibration results, {location.capitalize()}')
             fig.tight_layout()
-            fig.savefig(f'figures/multical{filestem}_{location}.png')
+            sc.savefig(f'figures/multical{filestem}_{location}.png')
 
 
     return calib, sims
