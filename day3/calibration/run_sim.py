@@ -27,7 +27,7 @@ save_plots = True
 
 # %% Simulation creation functions
 def make_sim(location=None, calib_pars=None, debug=0, analyzers=[], datafile=None, seed=1):
-    ''' Define parameters, analyzers, and interventions for the simulation -- not the sim itself '''
+    ''' Define the simulation, including parameters, analyzers, and interventions '''
 
     pars = dict(
         n_agents=[10e3, 1e3][debug],
