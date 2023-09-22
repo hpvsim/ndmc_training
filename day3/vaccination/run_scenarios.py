@@ -17,7 +17,6 @@ import hpvsim as hpv
 # Imports from this repository
 import run_sim as rs
 import utils as ut
-import pars_scenarios as sp
 
 # Comment out to not run
 to_run = [
@@ -29,7 +28,7 @@ locations = [
     'india'
 ]
 
-debug = 0
+debug = True
 n_seeds = [3, 1][debug] # How many seeds to use for stochasticity in projections
 
 label_dict = {
