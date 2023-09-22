@@ -100,8 +100,6 @@ def run_sims(locations=None, verbose=-1, analyzers=None, *args, **kwargs):
     return sims
 
 
-
-
 # %% Run as a script
 if __name__ == '__main__':
     T = sc.timer()

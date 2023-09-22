@@ -9,11 +9,7 @@ import seaborn as sns
 
 
 
-# %% Functions
-def annotate_axes(ax, text, fontsize=18):
-    ax.text(0.5, 0.5, text, transform=ax.transAxes,
-            ha="center", va="center", fontsize=fontsize, color="darkgrey")
-
+# %% Plotting function
 
 def plot_calib(calib, res_to_plot=100):
 
