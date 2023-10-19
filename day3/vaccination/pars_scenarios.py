@@ -9,45 +9,39 @@ import hpvsim as hpv
 import pars_data as dp
 
 
-def get_vx_intvs(routine_start_year=2020, catch_up_year=2020, end_year=2050, vx_coverage=0.9, age_range=(9,14), gender_neutral=False,
-                 male_eff_redux=False, product='bivalent'):
+def get_vx_intvs(routine_start_year=2020, catch_up_year=2020, end_year=2050, vx_coverage=0.9, age_range=(9,14),
+                 gender_neutral=False, male_eff_redux=False, product='bivalent'):
 
     catchup_age = (age_range[0]+1, age_range[1])
     routine_age = (age_range[0], age_range[0]+1)
-
-
+    sex='m'
     intvs = sc.autolist()
-    if gender_neutral:
 
-        if male_eff_redux:
-            prod = hpv.default_vx(prod_name=product)
-            prod.imm_init = dict(dist='beta_mean', par1=0.45, par2=0.025)
+    if male_eff_redux:
+        prod = hpv.default_vx(prod_name=product)
+        prod.imm_init = dict(dist='beta_mean', par1=0.45, par2=0.025)
 
-            routine_boys_vx = hpv.routine_vx(
-                prob=vx_coverage,
-                start_year=routine_start_year,
-                end_year=end_year,
-                product=prod,
-                age_range=routine_age,
-                sex='m',
-                label='Boys routine vx'
-            )
+        routine_boys_vx = hpv.routine_vx(
+            prob=vx_coverage,
+            start_year=routine_start_year,
+            end_year=end_year,
+            product=prod,
+            age_range=routine_age,
+            sex='m',
+            label='Boys routine vx'
+        )
 
-            catchup_boys_vx = hpv.campaign_vx(
-                prob=vx_coverage,
-                years=catch_up_year,
-                product=prod,
-                age_range=catchup_age,
-                sex='m',
-                label='Boys catchup vx'
-            )
-            intvs += [routine_boys_vx, catchup_boys_vx]
-            sex = 'f'
-        else:
-            sex = ['f', 'm']
-
+        catchup_boys_vx = hpv.campaign_vx(
+            prob=vx_coverage,
+            years=catch_up_year,
+            product=prod,
+            age_range=catchup_age,
+            sex='m',
+            label='Boys catchup vx'
+        )
+        intvs += [routine_boys_vx, catchup_boys_vx]
     else:
-        sex='f'
+        sex = 'f'  # Set 'sex' to 'f' for female vaccination
 
     prod = hpv.default_vx(prod_name=product)
     if product == 'bivalent':
@@ -59,7 +53,7 @@ def get_vx_intvs(routine_start_year=2020, catch_up_year=2020, end_year=2050, vx_
         end_year=end_year,
         product=prod,
         age_range=routine_age,
-        sex=sex,
+        sex=sex,  # Use the 'sex' variable here
         label='Routine vx'
     )
 
@@ -68,13 +62,16 @@ def get_vx_intvs(routine_start_year=2020, catch_up_year=2020, end_year=2050, vx_
         years=catch_up_year,
         product=prod,
         age_range=catchup_age,
-        sex=sex,
+        sex=sex,  # Use the 'sex' variable here
         label='Catchup vx'
     )
 
     intvs += [routine_vx, catchup_vx]
 
     return intvs
+
+
+
 
 def get_screen_intvs(primary=None, triage=None, screen_coverage=0.7, ltfu=0.3, start_year=2025):
     '''

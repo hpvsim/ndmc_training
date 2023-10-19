@@ -32,9 +32,7 @@ save_plots = True
 
 
 #%% Simulation creation functions
-def make_sim_parts(location=None, debug=0,
-                   screen_intv=None, vx_intv=None,
-                   end=None):
+def make_sim(location=None, calib_pars=None, debug=0, vx_intv=None, end=None, datafile=None, seed=1):
     ''' Define parameters, analyzers, and interventions for the simulation -- not the sim itself '''
     if end is None:
         end = 2060
@@ -65,30 +63,25 @@ def make_sim_parts(location=None, debug=0,
         verbose        = 0.0,
     )
 
+    if calib_pars is not None:
+        pars = sc.mergedicts(pars, calib_pars)
+
     # Analyzers
     analyzers = sc.autolist()
+
+    # Interventions
     interventions = sc.autolist()
-    if len(vx_intv):
-        interventions += sp.get_vx_intvs(**vx_intv)
+    if vx_intv is not None:
+        interventions += vx_intv
 
-    if len(screen_intv):
-        interventions += sp.get_screen_intvs(**screen_intv)
+    sim = hpv.Sim(pars=pars, analyzers=analyzers, interventions=interventions, datafile=datafile, rand_seed=seed)
 
-    return pars, analyzers, interventions
-
-
-def make_sim(pars=None, analyzers=None, interventions=None, datafile=None, seed=1):
-    ''' Actually create the sim '''
-    sim = hpv.Sim(pars=pars, analyzers=analyzers, interventions=interventions,
-                  datafile=datafile, rand_seed=seed)
     return sim
-
 
 
 #%% Simulation running functions
 
-def run_sim(location=None, use_calib_pars=True,
-            screen_intv=None, vx_intv=None,
+def run_sim(location=None, use_calib_pars=True, vx_intv=None,
             debug=0, seed=0, label=None, meta=None, verbose=0.1, end=None,
             do_save=False, die=False, calib_filestem=''):
     ''' Assemble the parts into a complete sim and run it '''
@@ -101,11 +94,6 @@ def run_sim(location=None, use_calib_pars=True,
     if debug: msg += ' IN DEBUG MODE'
     print(msg)
 
-    # Make arguments
-    args = make_sim_parts(location=location,
-                          vx_intv=vx_intv, screen_intv=screen_intv,
-                          end=end, debug=debug)
-
     # Make any parameter updates
     if use_calib_pars:
         file = f'{ut.resfolder}/{location}_pars{calib_filestem}.obj'
@@ -114,11 +102,11 @@ def run_sim(location=None, use_calib_pars=True,
         except:
             errormsg = 'Calibration parameters cannot be loaded from disk. Try running load_calib to generate them.'
             raise ValueError(errormsg)
-        pars = sc.mergedicts(args[0], calib_pars)
-        args = pars, args[1], args[2]
-    sim = make_sim(*args)
 
-    # Store metadata
+    # Make arguments
+    sim = make_sim(location=location, calib_pars=calib_pars, vx_intv=vx_intv, end=end, debug=debug)
+
+   # Store metadata
     sim.meta = sc.objdict()
     if meta is not None:
         sim.meta = meta # Copy over meta info
@@ -165,7 +153,7 @@ if __name__ == '__main__':
         gender_neutral=True
     )
     screen_scen = {}  # Not varying S&T
-    sim0 = run_sim(location='india', end=2030, vx_intv=vx_scen, screen_intv=screen_scen)
+    sim0 = run_sim(location='india', end=2030, vx_intv=vx_scen)
 
     sim0.plot()
     T.toc('Done')
