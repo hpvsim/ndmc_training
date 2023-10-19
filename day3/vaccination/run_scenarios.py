@@ -55,7 +55,7 @@ def make_sims(calib_pars=None):
     sims = sc.autolist()
     for name, intv in vx_scenarios.items():
         for seed in range(n_seeds):
-            sims += rs.make_sim(location=location, calib_pars=calib_pars, debug=debug, vx_intv=intv, end=2060, seed=seed)
+            sims += rs.make_sim(location=location, calib_pars=calib_pars, debug=debug, vx_intv=intv, end=2100, seed=seed)
     return sims
 
 
@@ -71,14 +71,39 @@ def run_sims(calib_pars=None):
 if __name__ == '__main__':
 
     T = sc.timer()
+    do_run = True
+    do_plot = False
+    scen_labels = ['baseline', 'males', 'females']
 
     # Run
-    calib_pars = sc.loadobj('results/india_pars.obj')
-    msim = run_sims(calib_pars=calib_pars)
-    sc.saveobj('vx.msim', msim)
+    if do_run:
+        calib_pars = sc.loadobj('results/india_pars.obj')
+        msim = run_sims(calib_pars=calib_pars)
+        mlist = msim.split(chunks=len(scen_labels))
+        msim_dict = sc.objdict({scen_labels[i]: mlist[i].reduce(output=True).results for i in range(len(scen_labels))})
+        sc.saveobj(f'results/vx.scens', msim_dict)
+    else:
+        msim_dict = sc.loadobj('results/vx.scens')
 
-    # # Plot
-    # to_plot = [
-    #     'asr_cancer_incidence',
-    # ]
-    # msim.plot(to_plot, color_by_sim=True, max_sims=len(msim))
+    if do_plot:
+        import pylab as pl
+        colors = sc.gridcolors(3)
+        sc.options(fontsize=20)
+        fig, ax = pl.subplots(figsize=(18, 14))
+        to_plot = 'asr_cancer_incidence'
+
+        for sno, sname, mres in msim_dict.enumitems():
+            years = mres.year[70:]
+            best = mres[to_plot][70:]
+            low = mres[to_plot].low[70:]
+            high = mres[to_plot].high[70:]
+            ax.plot(years, best, color=colors[sno], label=sname.capitalize())
+            ax.fill_between(years, low, high, alpha=0.5, color=colors[sno])
+
+        ax.set_ylim(bottom=0)
+        ax.set_title('ASR cancer incidence')
+        pl.legend()
+        fig.tight_layout()
+        fig_name = 'vx_scens.png'
+        sc.savefig(fig_name, dpi=100)
+        fig.show()
