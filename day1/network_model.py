@@ -13,11 +13,13 @@ import numpy as np
 import sciris as sc
 import pylab as pl
 
+sc.options(dpi=200)
+
 # Set parameters
 beta = 3 # Infection rate
 gamma = 0.5 # Recovery rate
 n_contacts = 10 # Number of people each person is connected to
-distance = 100 # The distance over which people form contacts
+distance = 0.1 # The distance over which people form contacts
 I0 = 1 # Number of people initially infected
 N = 100 # Total population size
 maxtime = 10 # How long to simulate for
